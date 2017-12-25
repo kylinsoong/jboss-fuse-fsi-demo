@@ -9,6 +9,8 @@
   <version>1.0-SNAPSHOT</version>
   <modules>
     <module>file-listener</module>
+    <module>rest-service</module>
+    <module>rest-listener</module>
     <module>fund-processor</module>
     <module>fund-persister</module>
   </modules>
