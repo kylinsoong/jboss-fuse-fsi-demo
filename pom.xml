@@ -14,13 +14,13 @@
   </modules>
   <packaging>pom</packaging>
   <properties>
-    <camel-version>2.12.0.redhat-610379</camel-version>
-    <activemq-version>5.9.0.redhat-610379</activemq-version>
-    <cxf-version>2.7.0.redhat-610379</cxf-version>
+    <camel-version>2.17.0.redhat-630187</camel-version>
+    <activemq-version>5.11.0.redhat-630187</activemq-version>
+    <cxf-version>3.1.5.redhat-630187</cxf-version>
     <jetty-version>7.5.4.v20111024</jetty-version>
     <slf4j-version>1.6.6</slf4j-version>
     <spring-version>3.2.8.RELEASE</spring-version>
-    <derby-version>10.10.2.0</derby-version>
+    <derby-version>10.14.1.0</derby-version>
     <jboss-as-maven-plugin-version>7.5.Final</jboss-as-maven-plugin-version>
     <mybatis-spring-version>1.1.0</mybatis-spring-version>
     <jackson.jaxrs.version>1.9.0</jackson.jaxrs.version>

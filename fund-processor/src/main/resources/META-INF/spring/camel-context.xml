@@ -1,23 +1,32 @@
+<?xml version="1.0" encoding="UTF-8"?>
 <beans xmlns="http://www.springframework.org/schema/beans"
-       xmlns:camel="http://camel.apache.org/schema/spring" 
-       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-       xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd
-                           http://camel.apache.org/schema/spring http://camel.apache.org/schema/spring/camel-spring.xsd">
-
-  <!-- Set username and password to values you set in etc/user.properties -->
-  <bean id="activemq" class="org.apache.activemq.camel.component.ActiveMQComponent" >
-    <property name="brokerURL" value="tcp://localhost:61616"/>
-    <property name="userName" value="admin"/>
-    <property name="password" value="admin"/>
-  </bean>
-
-  <camelContext id="queueConsumerContext" trace="true" xmlns="http://camel.apache.org/schema/spring">
-    <route id="queueConsumerRoute">
-      <from uri="activemq:topic:events.newfund" />
-      <log message="[fileRoute] Read a message off the newfund topic" />
-      <to uri="xslt:com/redhat/poc/fsi/transform.xsl" />
-      <to uri="file:src/data/output" />
-    </route>
-  </camelContext>
-
+    xmlns:camel="http://camel.apache.org/schema/spring"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd                            http://camel.apache.org/schema/spring http://camel.apache.org/schema/spring/camel-spring.xsd">
+    <!-- Set username and password to values you set in etc/user.properties -->
+    <bean class="org.apache.activemq.camel.component.ActiveMQComponent" id="activemq">
+        <property name="brokerURL" value="tcp://localhost:61616"/>
+        <property name="userName" value="admin"/>
+        <property name="password" value="admin"/>
+    </bean>
+    <camelContext id="fundProcessorContext" trace="true" xmlns="http://camel.apache.org/schema/spring">
+        <route id="fund-processor">
+            <from id="_from1" uri="activemq:topic:events.newfund"/>
+            <onException id="_onException1">
+                <exception>org.apache.camel.ValidationException</exception>
+                <handled>
+                    <constant>true</constant>
+                </handled>
+                <log id="_log1" message="Invalid Message - Sending to Invalid Message Queue"/>
+            </onException>
+            <onException id="_onException2">
+                <exception>java.lang.IllegalStateException</exception>
+                <redeliveryPolicy maximumRedeliveries="2"/>
+                <log id="_log2" message="Had a planned failure!! will try redelivery..."/>
+            </onException>
+            <to id="_to1" uri="validator:com/redhat/poc/fsi/types.xsd"/>
+            <log id="_log3" message="[fund-processor] Read a message off the newfund topic"/>
+            <to id="_to2" uri="xslt:com/redhat/poc/fsi/transform.xsl"/>
+            <to id="_to3" uri="file:/home/kylin/tmp/output"/>
+        </route>
+    </camelContext>
 </beans>

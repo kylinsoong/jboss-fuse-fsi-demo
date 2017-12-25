@@ -20,17 +20,23 @@ import javax.xml.bind.annotation.XmlRootElement;
 
 /**
  * Created by ceposta (http://christianposta.com/blog)).
+ * Modified by Kylin (http://ksoong.org)
  */
 
 @XmlRootElement(name = "transaction")
 public class Transaction {
 
     private int fundNumber;
+    
+    private int balance = 50000;
+    
+    private boolean denied;
+    
+    private String deniedCause;
 
     private String transactionType;
 
     private String fundName;
-
 
     public int getFundNumber() {
         return fundNumber;
@@ -39,8 +45,32 @@ public class Transaction {
     public void setFundNumber(int fundNumber) {
         this.fundNumber = fundNumber;
     }
+  
+	public int getBalance() {
+		return balance;
+	}
 
-    public String getTransactionType() {
+	public void setBalance(int balance) {
+		this.balance = balance;
+	}
+
+	public boolean isDenied() {
+		return denied;
+	}
+
+	public void setDenied(boolean denied) {
+		this.denied = denied;
+	}
+
+	public String getDeniedCause() {
+		return deniedCause;
+	}
+
+	public void setDeniedCause(String deniedCause) {
+		this.deniedCause = deniedCause;
+	}
+
+	public String getTransactionType() {
         return transactionType;
     }
 

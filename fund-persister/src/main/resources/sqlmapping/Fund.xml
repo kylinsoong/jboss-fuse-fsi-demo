@@ -25,8 +25,8 @@
 
     <!-- Select with no parameters using the result map for Order class. -->
     <insert id="insertFund" parameterType="com.redhat.poc.fsi.fund.Transaction">
-    insert into funds ( fundNumber,transactionType, fundName)
-    values(#{fundNumber}, #{transactionType}, #{fundName})
+    insert into funds (fundNumber, balance, denied, deniedCause, transactionType, fundName)
+    values(#{fundNumber}, #{balance}, #{denied}, #{deniedCause}, #{transactionType}, #{fundName})
   </insert>
 
 </mapper>

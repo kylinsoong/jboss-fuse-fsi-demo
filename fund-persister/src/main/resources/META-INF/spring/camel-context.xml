@@ -1,60 +1,61 @@
+<?xml version="1.0" encoding="UTF-8"?>
 <beans xmlns="http://www.springframework.org/schema/beans"
-       xmlns:camel="http://camel.apache.org/schema/spring" 
-       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-       xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd
-                           http://camel.apache.org/schema/spring http://camel.apache.org/schema/spring/camel-spring.xsd">
-
-  <!-- Set username and password to values you set in etc/user.properties -->
-  <bean id="activemq" class="org.apache.activemq.camel.component.ActiveMQComponent" >
-    <property name="brokerURL" value="tcp://localhost:61616"/>
-    <property name="userName" value="admin"/>
-    <property name="password" value="admin"/>
-  </bean>
-
-  <bean id="blowUpRoute" class="com.redhat.poc.fsi.route.BlowUpRoute"/>
-
-
-  <camelContext id="fundPersisterContext" trace="false" xmlns="http://camel.apache.org/schema/spring"
-          xmlns:tx="http://poc.jboss.org/model/xml">
-
-    <!--<routeBuilder ref="blowUpRoute"/>-->
-
-    <route id="databaseRoute">
-      <from uri="activemq:topic:events.newfund" />
-
-      <onException>
-        <exception>org.apache.camel.ValidationException</exception>
-        <handled>
-          <constant>true</constant>
-        </handled>
-        <log message="Invalid Message - Sending to Invalid Message Queue" />
-        <to uri="activemq:queue:com.fsi.poc.txinvalid" />
-      </onException>
-
-      <onException>
-        <exception>java.lang.IllegalStateException</exception>
-        <redeliveryPolicy maximumRedeliveries="2" />
-        <log message="Had a planned failure!! will try redelivery..."/>
-      </onException>
-
-      <log message="[databaseRoute] Read a message off the newfund topic" />
-      <to uri="validator:com/redhat/poc/fsi/types.xsd" />
-      <choice>
-        <when>
-          <xpath>/tx:transaction/tx:fundName = 'Global'</xpath>
-          <log message="Global Fund Found" />
-          <unmarshal>
-            <jaxb prettyPrint="true" contextPath="com.redhat.poc.fsi.fund" schema="com/redhat/poc/fsi/types.xsd"/>
-          </unmarshal>
-          <log message="Transformed the message"/>
-          <to id="persistFund" uri="mybatis:insertFund?statementType=Insert" />
-          <log message="Finished inserting to DB"/>
-        </when>
-        <otherwise>
-          <log message="Had an invalid message... Discarding Message" />
-        </otherwise>
-      </choice>
-    </route>
-  </camelContext>
-
+    xmlns:camel="http://camel.apache.org/schema/spring"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd                            http://camel.apache.org/schema/spring http://camel.apache.org/schema/spring/camel-spring.xsd">
+    <!-- Set username and password to values you set in etc/user.properties -->
+    <bean class="org.apache.activemq.camel.component.ActiveMQComponent" id="activemq">
+        <property name="brokerURL" value="tcp://localhost:61616"/>
+        <property name="userName" value="admin"/>
+        <property name="password" value="admin"/>
+    </bean>
+    <bean class="com.redhat.poc.fsi.route.BlowUpRoute" id="blowUpRoute"/>
+    <camelContext id="fundPersisterContext" trace="false"
+        xmlns="http://camel.apache.org/schema/spring" xmlns:tx="http://poc.jboss.org/model/xml">
+        <!--<routeBuilder ref="blowUpRoute"/>-->
+        <route id="fund-persister">
+            <from id="_from1" uri="activemq:topic:events.newfund"/>
+            <onException id="_onException1">
+                <exception>org.apache.camel.ValidationException</exception>
+                <handled>
+                    <constant>true</constant>
+                </handled>
+                <log id="_log1" message="Invalid Message - Sending to Invalid Message Queue"/>
+                <to id="_to1" uri="activemq:queue:com.fsi.poc.txinvalid"/>
+            </onException>
+            <onException id="_onException2">
+                <exception>java.lang.IllegalStateException</exception>
+                <redeliveryPolicy maximumRedeliveries="2"/>
+                <log id="_log2" message="Had a planned failure!! will try redelivery..."/>
+            </onException>
+            <log id="_log3" message="[databaseRoute] Read a message off the newfund topic"/>
+            <to id="_to2" uri="validator:com/redhat/poc/fsi/types.xsd"/>
+            <choice id="_choice1">
+                <when id="_when1">
+                    <xpath>/tx:transaction/tx:fundName = 'Global'</xpath>
+                    <log id="_log4" message="Global Fund Found"/>
+                    <unmarshal id="_unmarshal1">
+                        <jaxb contextPath="com.redhat.poc.fsi.fund"
+                            prettyPrint="true" schema="com/redhat/poc/fsi/types.xsd"/>
+                    </unmarshal>
+                    <log id="_log5" message="Transformed the message"/>
+                    <to id="persistFund" uri="mybatis:insertFund?statementType=Insert"/>
+                    <log id="_log6" message="Finished inserting to DB"/>
+                </when>
+                <when id="_when2">
+                    <xpath>/tx:transaction/tx:fundName = 'Local'</xpath>
+                    <log id="_log7" message="Local Fund Found"/>
+                    <unmarshal id="_unmarshal2">
+                        <jaxb contextPath="com.redhat.poc.fsi.fund"
+                            prettyPrint="true" schema="com/redhat/poc/fsi/types.xsd"/>
+                    </unmarshal>
+                    <log id="_log8" message="Transformed the message"/>
+                    <to id="persistFund" uri="mybatis:insertFund?statementType=Insert"/>
+                    <log id="_log9" message="Finished inserting to DB"/>
+                </when>
+                <otherwise id="_otherwise1">
+                    <log id="_log10" message="Had an invalid message, only Local and Global transaction be handled, Discarding Message"/>
+                </otherwise>
+            </choice>
+        </route>
+    </camelContext>
 </beans>
