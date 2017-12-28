@@ -4,8 +4,8 @@
     xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd                            http://camel.apache.org/schema/spring http://camel.apache.org/schema/spring/camel-spring.xsd">
     <camelContext id="restConsumerContext" trace="true" xmlns="http://camel.apache.org/schema/spring">
         <route id="httpBridge">
-            <from id="_from1" uri="jetty:http://0.0.0.0:8180/greeting?matchOnUriPrefix=true"/>
-            <to id="_to1" uri="jetty:http://localhost:8080/greeting?bridgeEndpoint=true&amp;throwExceptionOnFailure=false"/>
+            <from id="_from1" uri="jetty:http://0.0.0.0:8180/transaction?matchOnUriPrefix=true"/>
+            <to id="_to1" uri="jetty:http://localhost:8080/transaction?bridgeEndpoint=true&amp;throwExceptionOnFailure=false"/>
             <log id="_log1" message="[httpBridge] forwarded Request"/>
         </route>
     </camelContext>
