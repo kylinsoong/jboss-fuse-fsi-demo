@@ -20,7 +20,7 @@
                     <constant>true</constant>
                 </handled>
                 <log id="_log1" message="Invalid Message - Sending to Invalid Message Queue"/>
-                <to id="_to1" uri="activemq:queue:com.fsi.poc.txinvalid"/>
+                <to id="_to1" uri="activemq:queue:invalidfunds"/>
             </onException>
             <onException id="_onException2">
                 <exception>java.lang.IllegalStateException</exception>

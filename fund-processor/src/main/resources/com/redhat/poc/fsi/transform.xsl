@@ -11,10 +11,11 @@
  </xsl:copy>
 </xsl:template>
 
-<!--  <xsl:template match="ns1:transaction/ns1:transactionType/text()">THIS SHOULD BE A MODIFIED VALUE</xsl:template>--> 
+  <xsl:template match="ns1:transaction/ns1:fundStatus/text()">Active</xsl:template>
+  <!--
    <xsl:template match="ns1:fundName">
       <xsl:copy-of select="."/>
       <fundType>Currency</fundType>
       <fundStatus>Active</fundStatus>
-   </xsl:template>
+   </xsl:template>--> 
 </xsl:stylesheet> 

@@ -8,9 +8,11 @@ public class Transaction {
 	private String deniedCause;
 	private String transactionType;
 	private String fundName;
+    private String fundType;
+    private String fundStatus;
 	
 	public Transaction(Integer fundNumber, Integer balance, Boolean denied, String deniedCause, String transactionType,
-			String fundName) {
+			String fundName, String fundType, String fundStatus) {
 		super();
 		this.fundNumber = fundNumber;
 		this.balance = balance;
@@ -18,6 +20,8 @@ public class Transaction {
 		this.deniedCause = deniedCause;
 		this.transactionType = transactionType;
 		this.fundName = fundName;
+		this.fundType = fundType;
+		this.fundStatus = fundStatus;
 	}
 
 	public Integer getFundNumber() {
@@ -66,5 +70,21 @@ public class Transaction {
 
 	public void setFundName(String fundName) {
 		this.fundName = fundName;
+	}
+
+	public String getFundType() {
+		return fundType;
+	}
+
+	public void setFundType(String fundType) {
+		this.fundType = fundType;
+	}
+
+	public String getFundStatus() {
+		return fundStatus;
+	}
+
+	public void setFundStatus(String fundStatus) {
+		this.fundStatus = fundStatus;
 	}
 }

@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+    xmlns:camel="http://camel.apache.org/schema/spring"
+    xmlns:kie="http://drools.org/schema/kie-spring"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.springframework.org/schema/beans                         http://www.springframework.org/schema/beans/spring-beans.xsd                         http://camel.apache.org/schema/spring                         http://camel.apache.org/schema/spring/camel-spring.xsd                         http://drools.org/schema/kie-spring                         http://drools.org/schema/kie-spring.xsd">
+    <!-- Set username and password to values you set in etc/user.properties -->
+    <bean class="org.apache.activemq.camel.component.ActiveMQComponent" id="activemq">
+        <property name="brokerURL" value="tcp://localhost:61616"/>
+        <property name="userName" value="admin"/>
+        <property name="password" value="admin"/>
+    </bean>
+    <kie:kmodule id="camel-context">
+        <kie:kbase name="com.redhat.poc.drls">
+            <kie:ksession name="ksession1" type="stateless"/>
+        </kie:kbase>
+    </kie:kmodule>
+    <camelContext id="rulesProcessorContext" trace="false"
+        xmlns="http://camel.apache.org/schema/spring" xmlns:tx="http://poc.jboss.org/model/xml">
+        <route id="rules-processor">
+            <from id="_from1" uri="activemq:queue:activefunds"/>
+            <log id="_log1" message="[rules-processor] Read a message from activefunds queue"/>
+            <unmarshal id="_unmarshal1">
+                <jaxb contextPath="com.redhat.poc.fsi.fund"
+                    prettyPrint="true" schema="com/redhat/poc/fsi/types.xsd"/>
+            </unmarshal>
+            <log id="_log2" message="[rules-processor] Transformed the transaction"/>
+            <to id="fireRules" uri="kie:ksession1?action=insertBody"/>
+            <log id="_log3" message="[rules-processor] Fired Rules"/>
+        </route>
+    </camelContext>
+</beans>

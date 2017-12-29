@@ -48,9 +48,11 @@ public class MessageServiceController {
 			                     , @RequestParam(value="denied", defaultValue="false") Boolean denied
 			                     , @RequestParam(value="deniedCause", defaultValue="none") String deniedCause
 			                     , @RequestParam(value="transactionType") String transactionType
-			                     , @RequestParam(value="fundName") String fundName) throws Exception {
+			                     , @RequestParam(value="fundName") String fundName
+			                     , @RequestParam(value="fundType", defaultValue="Currency") String fundType
+			                     , @RequestParam(value="fundStatus", defaultValue="Inactive") String fundStatus) throws Exception {
 		
-		Transaction t = new Transaction(fundNumber, balance, denied, deniedCause, transactionType, fundName);
+		Transaction t = new Transaction(fundNumber, balance, denied, deniedCause, transactionType, fundName, fundType, fundStatus);
 		File xmlMessage = formMessage(t);
 		
 		Connection conn = AMQClient.getFactory().createConnection();
@@ -61,6 +63,7 @@ public class MessageServiceController {
 		MessageProducer producer = session.createProducer(topic);
 		
 		TextMessage msg = formMessage(session, xmlMessage);
+		msg.setJMSMessageID(xmlMessage.getName());
 				
 		producer.send(msg);
 		
@@ -92,7 +95,7 @@ public class MessageServiceController {
 		
 		try {
 			
-			File xmlFile = File.createTempFile("message" + counter.get(), ".xml");
+			File xmlFile = File.createTempFile("message-" + counter.get(), ".xml");
 			
 			DocumentBuilderFactory docFactory = DocumentBuilderFactory.newInstance();
 			DocumentBuilder docBuilder = docFactory.newDocumentBuilder();
@@ -125,6 +128,14 @@ public class MessageServiceController {
 			Element fundName = doc.createElement("fundName");
 			fundName.appendChild(doc.createTextNode(t.getFundName()));
 			rootElement.appendChild(fundName);
+			
+			Element fundType = doc.createElement("fundType");
+			fundType.appendChild(doc.createTextNode(t.getFundType()));
+			rootElement.appendChild(fundType);
+			
+			Element fundStatus = doc.createElement("fundStatus");
+			fundStatus.appendChild(doc.createTextNode(t.getFundStatus()));
+			rootElement.appendChild(fundStatus);
 			
 			TransformerFactory transformerFactory = TransformerFactory.newInstance();
 			Transformer transformer = transformerFactory.newTransformer();

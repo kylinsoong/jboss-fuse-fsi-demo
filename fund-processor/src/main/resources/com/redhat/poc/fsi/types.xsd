@@ -32,6 +32,8 @@
       <xs:element name="deniedCause" type="xs:string" minOccurs="1" maxOccurs="1" nillable="false"/>
       <xs:element name="transactionType" type="TransactionType" minOccurs="1" maxOccurs="1" nillable="false"/>
       <xs:element name="fundName" type="xs:string" minOccurs="1" maxOccurs="1" nillable="false"/>
+      <xs:element name="fundType" type="xs:string" minOccurs="1" maxOccurs="1" nillable="false"/>
+      <xs:element name="fundStatus" type="xs:string" minOccurs="1" maxOccurs="1" nillable="false"/>
     </xs:sequence>
   </xs:complexType>
 

@@ -6,4 +6,5 @@
   <deniedCause>none</deniedCause>
   <transactionType>WITHDRAWL</transactionType>
   <fundName>LocalX</fundName>
+  <fundStatus>Inactive</fundStatus>
 </transaction>

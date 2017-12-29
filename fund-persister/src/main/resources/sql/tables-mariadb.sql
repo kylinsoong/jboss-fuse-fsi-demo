@@ -5,5 +5,7 @@ CREATE TABLE IF NOT EXISTS funds (
     denied BOOLEAN,
     deniedCause VARCHAR(255),
     transactionType VARCHAR(10),
-    fundName VARCHAR (30)
+    fundName VARCHAR (30),
+    fundType VARCHAR (30),
+    fundStatus VARCHAR (30)
   );

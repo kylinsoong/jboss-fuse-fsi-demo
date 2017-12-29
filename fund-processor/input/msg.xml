@@ -1,10 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <transaction xmlns="http://poc.jboss.org/model/xml">
+  <fundNumber>1</fundNumber>
   <balance>50000</balance>
   <denied>false</denied>
   <deniedCause>none</deniedCause>
   <transactionType>WITHDRAWL</transactionType>
   <fundName>Global</fundName>
-  <fundType>Currency</fundType>
-  <fundStatus>Inactive</fundStatus>
 </transaction>

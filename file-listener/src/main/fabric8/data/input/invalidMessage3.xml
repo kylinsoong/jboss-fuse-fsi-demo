@@ -6,4 +6,6 @@
   <deniedCause>none</deniedCause>
   <transactionType>WITHDRAWLS</transactionType>
   <fundName>Global</fundName>
+  <fundType>Currency</fundType>
+  <fundStatus>Inactive</fundStatus>
 </transaction>
