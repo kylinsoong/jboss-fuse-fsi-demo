@@ -1,0 +1,86 @@
+Drools-Spring-Camel Quickstart
+==============================
+This quickstart shows the integration between Spring, Camel and Drools decision tables. Sample decision table and DRL
+file contain rules which are then used to create knowledge session, as part of the Spring's application context XML file. 
+
+Camel routes are also defined inside the Spring's application context and they show different integration features like
+passing (inserting) the Body of the message as a POJO to Drools engine or creating a Drools Command wrapping the Body
+of the message with the help of the custom DroolsCommandHelperBean (included in this project), and passing this Drools
+Command to the ruleset for execution.
+
+If you are adapting this example to use CXF, please see the notes in the Integration Package documentation regarding the use of kie-camel along with CXF.
+
+
+FUSE
+----------
+1. Start FUSE:
+
+${FUSE_HOME}/bin/karaf
+
+
+2. Ensure that the drools and switchyard compatible features URL files have been added to your Fuse instance. 
+   In case they are not added then:
+
+    features:addurl mvn:org.drools/drools-karaf-features/6.5.0.Final-redhat-2/xml/features-fuse-6_3
+
+
+3. Add the features URL for the respective version of BXMS.
+
+JBossFuse:karaf@root> features:addurl mvn:org.jboss.integration.fuse.quickstarts/karaf-features/1.7.0.redhat-630013/xml/features
+
+
+4. Install the feature for the Blueprint camel drools decision table quickstart :
+
+JBossFuse:karaf@root> features:install fuse-bxms-quickstart-camel-spring-drools-decision-table
+
+5. Check the output. See output at the end of the document.
+
+6. Undeploy the quickstart:
+
+JBossFuse:karaf@root> features:uninstall fuse-bxms-quickstart-camel-spring-drools-decision-table
+
+
+
+EAP
+----------
+If installers have been previously installed on EAP skips the steps 1-4
+
+1.  Download Jboss EAP 6.4 or upper
+
+
+2.  Install them over your EAP instance:
+
+           java -jar fuse-eap-installer.jar ${eap.home}
+
+3.  Install the kie eap installer:
+
+        java -jar kie-eap-installer.jar ${eap.home}
+
+4.  Install the fuse-integration installer:
+
+        java -jar fuse-integration-eap-installer-${version.fuse.bxms-integration}.jar ${eap.home}
+
+5. Start EAP in standalone mode:
+
+        ${AS}/bin/standalone.sh
+
+6. Build and deploy the Quickstart : 
+
+        mvn install -Pdeploy
+
+7. Check the output. See output at the end of the document.
+
+8. Undeploy the quickstart:
+
+        mvn clean -Pdeploy
+ 
+
+
+To see the results tail the JBoss Fuse log
+
+    tail -f <JBoss Fuse Home> 
+    
+    2013-06-07 17:26:12,717 | INFO  | uteDecisionTable | Chilton   | 249 - org.apache.camel.camel-core - 2.10.3 | Cheese Stilton costs 10 EUR.
+    2013-06-07 17:26:12,842 | INFO  | imer://testRoute | Home      | 249 - org.apache.camel.camel-core - 2.10.3 | Person Young Person is staying home
+    2013-06-07 17:26:22,716 | INFO  | uteDecisionTable | Chilton   | 249 - org.apache.camel.camel-core - 2.10.3 | Cheese Stilton costs 10 EUR.
+    2013-06-07 17:26:22,839 | INFO  | imer://testRoute | Bar       | 249 - org.apache.camel.camel-core - 2.10.3 | Person Old Person can go to the bar

@@ -1,31 +1,89 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <beans xmlns="http://www.springframework.org/schema/beans"
-    xmlns:camel="http://camel.apache.org/schema/spring"
     xmlns:kie="http://drools.org/schema/kie-spring"
-    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.springframework.org/schema/beans                         http://www.springframework.org/schema/beans/spring-beans.xsd                         http://camel.apache.org/schema/spring                         http://camel.apache.org/schema/spring/camel-spring.xsd                         http://drools.org/schema/kie-spring                         http://drools.org/schema/kie-spring.xsd">
-    <!-- Set username and password to values you set in etc/user.properties -->
-    <bean class="org.apache.activemq.camel.component.ActiveMQComponent" id="activemq">
-        <property name="brokerURL" value="tcp://localhost:61616"/>
-        <property name="userName" value="admin"/>
-        <property name="password" value="admin"/>
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd http://camel.apache.org/schema/spring http://camel.apache.org/schema/spring/camel-spring.xsd http://drools.org/schema/kie-spring https://raw.githubusercontent.com/kiegroup/droolsjbpm-integration/master/kie-spring/src/main/resources/org/kie/spring/kie-spring-6.0.0.xsd">
+    <!-- Beans used by camel in the example -->
+    <bean class="org.drools.camel.example.DroolsCommandHelper" id="droolsHelper"/>
+    <bean class="org.drools.camel.example.PersonHelper" id="personHelper"/>
+    <bean
+        class="org.drools.osgi.spring.OsgiKModuleBeanFactoryPostProcessor" id="kiePostProcessor">
+        <!-- you can optionally define the GAV for this artifact as it follows -->
+        <!--property name="release" value="yourGroup:yourArtifact:yourVersion"/-->
     </bean>
-    <kie:kmodule id="camel-context">
-        <kie:kbase name="com.redhat.poc.drls">
+    <kie:kmodule id="sampleKmodule">
+        <kie:kbase name="kbase1" packages="com.redhat.poc">
             <kie:ksession name="ksession1" type="stateless"/>
         </kie:kbase>
     </kie:kmodule>
-    <camelContext id="rulesProcessorContext" trace="false"
-        xmlns="http://camel.apache.org/schema/spring" xmlns:tx="http://poc.jboss.org/model/xml">
-        <route id="rules-processor">
-            <from id="_from1" uri="activemq:queue:activefunds"/>
-            <log id="_log1" message="[rules-processor] Read a message from activefunds queue"/>
+    <!-- Camel Route -->
+    <camelContext id="rulesProcessorContext" xmlns="http://camel.apache.org/schema/spring">
+        <!-- 
+    <route id="rules-processor" trace="false">
+            <description>Example route that will regularly create a Person with a random age and verify their age</description>
+            <from id="_from1" uri="timer:testRoute?period=10s"/>
+            <bean id="_bean1" method="createTestPerson" ref="personHelper"/>
+            <to id="AgeVerification" uri="kie:ksession1?action=insertBody">
+                <description>valid 'action' values are:
+          'execute' that takes a 'Command' object (default)
+          'insertBody' that inserts the Exchange.in.body, and executes rules
+          'insertMessage' that inserts the Exchange.in (type org.apache.camel.Message), and executes rules
+          'insertExchange' that inserts the Exchange (type org.apache.camel.Exchange), and executes rules
+        </description>
+            </to>
+            <choice id="_choice1">
+                <when id="CanDrink">
+                    <simple>${body.canDrink}</simple>
+                    <log id="_log1" logName="Bar" message="Person ${body.name} can go to the bar"/>
+                </when>
+                <otherwise id="_otherwise1">
+                    <log id="_log2" logName="Home" message="Person ${body.name} is staying home"/>
+                </otherwise>
+            </choice>
+        </route>
+     -->
+        <route id="rules-processor" trace="false">
+            <from id="_from1" uri="file:/home/kylin/activefunds"/>
             <unmarshal id="_unmarshal1">
                 <jaxb contextPath="com.redhat.poc.fsi.fund"
                     prettyPrint="true" schema="com/redhat/poc/fsi/types.xsd"/>
             </unmarshal>
-            <log id="_log2" message="[rules-processor] Transformed the transaction"/>
-            <to id="fireRules" uri="kie:ksession1?action=insertBody"/>
-            <log id="_log3" message="[rules-processor] Fired Rules"/>
+            <log id="_log2" logName="Before Fire" message="[rules-processor] ${body}"/>
+            <to id="AgeVerification" uri="kie:ksession1?action=insertBody"/>
+            <log id="_log3" logName="After Fire" message="[rules-processor] ${body}"/>
+            <to id="finalTransaction" uri="file:/home/kylin/tmp/output"/>
         </route>
+        <!--  
+        <route id="ruleOnBody" trace="false">
+            <description>This route shows an example of passing (inserting) the Body of the message as a POJO to Drools
+        for execution
+      </description>
+            <from id="_from2" uri="direct://ruleOnBody"/>
+            <to id="_to1" uri="kie:ksession1?action=insertBody">
+                <description>valid 'action' values are:
+          'execute' that takes a 'Command' object (default)
+          'insertBody' that inserts the Exchange.in.body, and executes rules
+          'insertMessage' that inserts the Exchange.in (type org.apache.camel.Message), and executes rules
+          'insertExchange' that inserts the Exchange (type org.apache.camel.Exchange), and executes rules
+        </description>
+            </to>
+        </route>
+    
+        <route id="ruleOnCommand" trace="false">
+            <description>This route shows an example of creating a Drools Command wrapping the Body of the message with
+        the help of the custom DroolsCommandHelperBean (included in this project), and passing this Drools
+        Command to the ruleset for execution.
+      </description>
+            <from id="_from3" uri="direct://ruleOnCommand"/>
+            <bean id="_bean2" method="insertAndFireAll" ref="droolsHelper"/>
+            <to id="_to2" uri="kie:ksession1?action=execute">
+                <description>valid 'action' values are:
+          'execute' that takes a 'Command' object (default)
+          'insertBody' that inserts the Exchange.in.body, and executes rules
+          'insertMessage' that inserts the Exchange.in (type org.apache.camel.Message), and executes rules
+          'insertExchange' that inserts the Exchange (type org.apache.camel.Exchange), and executes rules
+        </description>
+            </to>
+        </route>
+        -->
     </camelContext>
 </beans>

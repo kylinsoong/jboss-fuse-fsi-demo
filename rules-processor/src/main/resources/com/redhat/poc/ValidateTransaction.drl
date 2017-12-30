@@ -1,0 +1,19 @@
+package com.redhat.poc;
+
+import com.redhat.poc.fsi.fund.Transaction;
+
+rule "increaseDeposit"
+when
+    t : Transaction(fundStatus == 'Active', transactionType == 'DEPOSIT')
+then
+	t.setBalance(100000);
+end
+
+rule "isValidTransaction"
+when
+    t : Transaction(fundStatus == 'Active', transactionType == 'WITHDRAWL', balance >= 50000)
+then
+    t.setBalance(0);
+	t.setDenied(true);
+	t.setDeniedCause("The withdraw exceed max balance 50000");
+end

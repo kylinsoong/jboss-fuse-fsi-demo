@@ -1,9 +1,0 @@
-package com.redhat.poc.drls;
-
-rule "Rule ping"
-  salience 1
-  when
-    eval (true)
-  then
-    System.out.println("Ping Success");
-end
