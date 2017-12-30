@@ -9,3 +9,4 @@ CREATE TABLE IF NOT EXISTS funds (
     fundType VARCHAR (30),
     fundStatus VARCHAR (30)
   );
+  ALTER TABLE funds ADD PRIMARY KEY(fundNumber);

@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+    xmlns:camel="http://camel.apache.org/schema/spring"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd                            http://camel.apache.org/schema/spring http://camel.apache.org/schema/spring/camel-spring.xsd">
+    <camelContext id="jdvServiceContext" trace="true" xmlns="http://camel.apache.org/schema/spring">
+        <route id="jdvODataService">
+            <from id="_from1" uri="jetty:http://0.0.0.0:8190/odata4?matchOnUriPrefix=true"/>
+            <to id="_to1" uri="jetty:http://localhost:8280/odata4?bridgeEndpoint=true&amp;throwExceptionOnFailure=false"/>
+            <log id="_log1" message="jdvODataService forwarded Request"/>
+        </route>
+    </camelContext>
+</beans>
